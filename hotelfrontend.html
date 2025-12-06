@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hotel Management — Polished UI</title>
+  <meta name="description" content="Modern single-file HTML UI for hotel management (demo)." />
+  <style>
+    /* Polished single-file hotel UI
+       - Dynamic color themes
+       - Dropdown navigation bar
+       - Responsive layout
+       - Clean components
+       - All in one HTML file (CSS + minimal JS)
+    */
+    :root{
+      --bg-0:#0b1220; --bg-1:#071029; --card:#0d1624; --muted:#9fb0c8; --txt:#e6f0fb;
+      --accent-1:#7c3aed; --accent-2:#06b6d4; --accent-3:#06b58e;
+      --success:#10b981; --danger:#ef4444; --glass:rgba(255,255,255,0.02);
+      --radius:14px; --pad:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:linear-gradient(180deg,var(--bg-0) 0%, var(--bg-1) 100%);color:var(--txt)}
+    .app{max-width:1200px;margin:32px auto;padding:18px}
+
+    /* Header */
+    header{display:flex;align-items:center;gap:16px;margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:18px;box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+    h1{margin:0;font-size:18px}
+    .subtitle{font-size:13px;color:var(--muted)}
+
+    /* Top nav */
+    nav.top{margin-left:auto;display:flex;align-items:center;gap:12px}
+    .nav-btn{background:transparent;border:0;color:var(--muted);padding:8px 12px;border-radius:10px;cursor:pointer}
+    .nav-btn:hover{color:var(--txt);background:var(--glass)}
+
+    /* Dropdown */
+    .dropdown{position:relative}
+    .dropdown-toggle{display:inline-flex;gap:8px;align-items:center;cursor:pointer;padding:8px 12px;border-radius:10px}
+    .dropdown-menu{position:absolute;right:0;top:48px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter:blur(6px);border-radius:12px;padding:8px;box-shadow:0 12px 36px rgba(2,6,23,0.6);min-width:220px;display:none}
+    .dropdown.open .dropdown-menu{display:block}
+    .dropdown-menu a{display:block;padding:10px;border-radius:8px;color:var(--muted);text-decoration:none}
+    .dropdown-menu a:hover{background:var(--glass);color:var(--txt)}
+
+    /* Layout */
+    main.grid{display:grid;grid-template-columns:320px 1fr;gap:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:var(--radius);box-shadow:0 8px 28px rgba(2,6,23,0.6)}
+
+    /* Sidebar */
+    .sidebar .section-title{color:var(--muted);font-size:13px;margin-bottom:10px}
+    .hotel-list{display:flex;flex-direction:column;gap:8px}
+    .hotel-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;cursor:pointer}
+    .hotel-item:hover{background:var(--glass)}
+    .hotel-item.active{background:linear-gradient(90deg, rgba(124,58,237,0.12), rgba(6,182,212,0.06));color:var(--txt)}
+
+    /* Controls */
+    .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:white}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+    /* Form elements */
+    label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+    input, select, textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--txt)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .mb{margin-bottom:12px}
+
+    /* Lists */
+    .rooms-list, .avail-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+    .rooms-list li{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00))}
+
+    /* Footer */
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* Theme swatches */
+    .swatches{display:flex;gap:8px}
+    .swatch{width:34px;height:34px;border-radius:8px;cursor:pointer;border:2px solid rgba(255,255,255,0.04)}
+
+    /* Responsive */
+    @media (max-width:900px){main.grid{grid-template-columns:1fr}.sidebar{order:2}.content{order:1}}
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo">HM</div>
+        <div>
+          <h1>Hotel Manager</h1>
+          <div class="subtitle">A modern single-file UI — demo mode</div>
+        </div>
+      </div>
+
+      <nav class="top">
+        <div class="dropdown" id="navDropdown">
+          <div class="dropdown-toggle nav-btn" id="navToggle">Menu ▾</div>
+          <div class="dropdown-menu">
+            <a href="#" id="navHotels">Hotels</a>
+            <a href="#" id="navRooms">Rooms</a>
+            <a href="#" id="navReserve">Reserve</a>
+            <a href="#" id="navPayments">Payments</a>
+          </div>
+        </div>
+
+        <div class="swatches" id="swatches">
+          <div class="swatch" data-theme="purple" title="Purple" style="background:linear-gradient(135deg,#7c3aed,#06b6d4)"></div>
+          <div class="swatch" data-theme="teal" title="Teal" style="background:linear-gradient(135deg,#06b6d4,#06b58e)"></div>
+          <div class="swatch" data-theme="sun" title="Sun" style="background:linear-gradient(135deg,#f59e0b,#ef4444)"></div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <aside class="sidebar card">
+        <div class="section-title">Hotels</div>
+        <div class="hotel-list" id="hotelList">
+          <!-- items injected by JS -->
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn-primary btn" id="loadDemo">Load demo</button>
+          <button class="btn-ghost btn" id="createHotelBtn">New hotel</button>
+        </div>
+
+        <hr style="margin:14px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
+        <div class="section-title">Quick actions</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
+          <button class="btn-ghost btn" id="addRoomBtn">Add room</button>
+          <button class="btn-ghost btn" id="reserveBtn">Reserve</button>
+          <button class="btn-ghost btn" id="paymentBtn">Payment</button>
+        </div>
+      </aside>
+
+      <section class="content card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div>
+            <div style="font-size:18px;color:var(--txt);font-weight:700">Dashboard</div>
+            <div class="subtitle">Manage hotels, rooms and bookings</div>
+          </div>
+          <div class="small muted">Demo UI — replace actions with API calls to connect</div>
+        </div>
+
+        <!-- Panels -->
+        <div id="panels">
+
+          <!-- Create Hotel Panel -->
+          <div id="panelCreateHotel" class="panel" style="margin-bottom:14px">
+            <div style="font-weight:700;color:var(--txt);margin-bottom:10px">Create Hotel</div>
+            <form id="formCreateHotel">
+              <div class="form-row">
+                <div>
+                  <label>Name</label>
+                  <input name="name" placeholder="Hotel name" required />
+                </div>
+                <div>
+                  <label>City</label>
+                  <input name="city" placeholder="City" />
+                </div>
+              </div>
+              <div class="mb" style="margin-top:10px">
+                <label>Address</label>
+                <input name="address" placeholder="Address" />
+              </div>
+              <div class="form-row mb">
+                <div>
+                  <label>Phone</label>
+                  <input name="phone" placeholder="Phone" />
+                </div>
+                <div style="display:flex;align-items:end;justify-content:flex-end">
+                  <button class="btn-ghost btn" id="cancelCreateHotel" type="button">Cancel</button>
+                  <button class="btn-primary btn" type="submit" style="margin-left:8px">Create</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Add Room Panel -->
+          <div id="panelAddRoom" class="panel" style="display:none;margin-bottom:14px">
+            <div style="font-weight:700;color:var(--txt);margin-bottom:10px">Add Room</div>
+            <form id="formAddRoom">
+              <div class="form-row">
+                <div>
+                  <label>Hotel</label>
+                  <select name="hotel_id" id="selectHotelForRoom"></select>
+                </div>
+                <div>
+                  <label>Room number</label>
+                  <input name="room_number" placeholder="e.g. 101" />
+                </div>
+              </div>
+              <div class="form-row mb" style="margin-top:8px">
+                <div>
+                  <label>Type</label>
+                  <input name="room_type" placeholder="Single/Double" />
+                </div>
+                <div>
+                  <label>Price</label>
+                  <input name="price" type="number" placeholder="3500" />
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:8px">
+                <button class="btn-ghost btn" type="button" id="cancelAddRoom">Cancel</button>
+                <button class="btn-primary btn" type="submit">Add Room</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Reserve Panel -->
+          <div id="panelReserve" class="panel" style="display:none;margin-bottom:14px">
+            <div style="font-weight:700;color:var(--txt);margin-bottom:10px">Reserve Room</div>
+            <form id="formReserve">
+              <div class="form-row">
+                <div>
+                  <label>Hotel</label>
+                  <select name="hotel_id" id="selectHotelForReserve"></select>
+                </div>
+                <div>
+                  <label>Room ID</label>
+                  <input name="room_id" placeholder="Pick from availability" />
+                </div>
+              </div>
+              <div class="form-row mb" style="margin-top:8px">
+                <div>
+                  <label>Check-in</label>
+                  <input name="check_in" type="date" />
+                </div>
+                <div>
+                  <label>Check-out</label>
+                  <input name="check_out" type="date" />
+                </div>
+              </div>
+              <div class="form-row mb">
+                <div>
+                  <label>Guest name</label>
+                  <input name="guest_name" />
+                </div>
+                <div>
+                  <label>Total amount</label>
+                  <input name="total_amount" type="number" />
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:8px">
+                <button class="btn-ghost btn" type="button" id="cancelReserve">Cancel</button>
+                <button class="btn-primary btn" type="submit">Reserve</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Payments -->
+          <div id="panelPayment" class="panel" style="display:none;margin-bottom:14px">
+            <div style="font-weight:700;color:var(--txt);margin-bottom:10px">Record Payment</div>
+            <form id="formPayment">
+              <div class="form-row mb">
+                <div>
+                  <label>Reservation ID</label>
+                  <input name="reservation_id" />
+                </div>
+                <div>
+                  <label>Amount</label>
+                  <input name="amount" type="number" />
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:8px">
+                <button class="btn-primary btn" type="submit">Record Payment</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Rooms list -->
+          <div style="margin-top:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <div style="font-weight:700;color:var(--txt)">Rooms</div>
+              <div class="small" style="color:var(--muted)">Select a hotel on the left</div>
+            </div>
+            <ul id="roomsList" class="rooms-list"></ul>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>Polished demo UI — save as <code>index.html</code> and open in browser. To connect to your backend, set API_BASE in the script below and replace demo handlers.</div>
+    </footer>
+  </div>
+
+  <script>
+    // UI script: controls theme swatches, dropdowns, demo data and panel toggles.
+    (function(){
+      const demo = {
+        hotels: [
+          {hotel_id:1, name:'Oceanview Resort', city:'Goa', address:'Beach Road'},
+          {hotel_id:2, name:'Mountain Retreat', city:'Manali', address:'Himalaya Rd'},
+          {hotel_id:3, name:'City Central Hotel', city:'Mumbai', address:'Marine Drive'}
+        ],
+        rooms: {
+          1: [ {room_id:101, room_number:'101', room_type:'Deluxe', price:4500}, {room_id:102, room_number:'102', room_type:'Suite', price:7500} ],
+          2: [ {room_id:201, room_number:'201', room_type:'Standard', price:3000} ],
+          3: [ {room_id:301, room_number:'301', room_type:'Executive', price:6500} ]
+        }
+      };
+
+      const el = (id) => document.getElementById(id);
+      const hotelList = el('hotelList');
+      const roomsList = el('roomsList');
+      const loadDemo = el('loadDemo');
+      const createHotelBtn = el('createHotelBtn');
+      const addRoomBtn = el('addRoomBtn');
+      const reserveBtn = el('reserveBtn');
+      const paymentBtn = el('paymentBtn');
+      const panelCreateHotel = el('panelCreateHotel');
+      const panelAddRoom = el('panelAddRoom');
+      const panelReserve = el('panelReserve');
+      const panelPayment = el('panelPayment');
+      const selectRoomHotel = el('selectHotelForRoom');
+      const selectReserveHotel = el('selectHotelForReserve');
+      const swatches = document.querySelectorAll('.swatch');
+      const dropdown = document.getElementById('navDropdown');
+      const navToggle = document.getElementById('navToggle');
+
+      // Render hotels
+      function renderHotels(list){
+        hotelList.innerHTML='';
+        list.forEach(h=>{
+          const div = document.createElement('div');
+          div.className='hotel-item';
+          div.innerHTML = `<div><strong style="color:var(--txt)">${h.name}</strong><div class="small" style="color:var(--muted)">${h.city} — ${h.address}</div></div><div class="small" style="color:var(--muted)">ID:${h.hotel_id}</div>`;
+          div.addEventListener('click', ()=> selectHotel(h, div));
+          hotelList.appendChild(div);
+        });
+      }
+
+      function selectHotel(h, node){
+        document.querySelectorAll('.hotel-item').forEach(item=>item.classList.remove('active'));
+        node.classList.add('active');
+        // show rooms
+        const list = demo.rooms[h.hotel_id] || [];
+        renderRooms(list);
+        // populate selects
+        populateHotelSelects(demo.hotels);
+      }
+
+      function renderRooms(list){
+        roomsList.innerHTML='';
+        if(!list.length) roomsList.innerHTML='<li style="color:var(--muted)">No rooms</li>';
+        list.forEach(r=>{
+          const li = document.createElement('li');
+          li.innerHTML = `<div><strong style="color:var(--txt)">${r.room_number} — ${r.room_type}</strong><div class="small" style="color:var(--muted)">Price: ₹${r.price}</div></div><div><button class="btn-ghost btn" data-id="${r.room_id}">Select</button></div>`;
+          roomsList.appendChild(li);
+        });
+      }
+
+      function populateHotelSelects(list){
+        selectRoomHotel.innerHTML=''; selectReserveHotel.innerHTML='';
+        list.forEach(h=>{
+          selectRoomHotel.insertAdjacentHTML('beforeend', `<option value="${h.hotel_id}">${h.name} (${h.city})</option>`);
+          selectReserveHotel.insertAdjacentHTML('beforeend', `<option value="${h.hotel_id}">${h.name} (${h.city})</option>`);
+        });
+      }
+
+      // Buttons
+      loadDemo.addEventListener('click', ()=>{ renderHotels(demo.hotels); populateHotelSelects(demo.hotels); showToast('Demo loaded'); });
+      createHotelBtn.addEventListener('click', ()=>{ togglePanels('createHotel'); });
+      addRoomBtn.addEventListener('click', ()=>{ togglePanels('addRoom'); });
+      reserveBtn.addEventListener('click', ()=>{ togglePanels('reserve'); });
+      paymentBtn.addEventListener('click', ()=>{ togglePanels('payment'); });
+
+      function togglePanels(panel){
+        panelCreateHotel.style.display = (panel==='createHotel') ? 'block' : 'none';
+        panelAddRoom.style.display = (panel==='addRoom') ? 'block' : 'none';
+        panelReserve.style.display = (panel==='reserve') ? 'block' : 'none';
+        panelPayment.style.display = (panel==='payment') ? 'block' : 'none';
+      }
+
+      // Dropdown nav toggle
+      navToggle.addEventListener('click', ()=>{ dropdown.classList.toggle('open'); });
+      document.querySelectorAll('#navDropdown .dropdown-menu a').forEach(a=>{
+        a.addEventListener('click', (ev)=>{ ev.preventDefault(); const id = ev.target.id; if(id==='navHotels') togglePanels(''); if(id==='navRooms') togglePanels('addRoom'); if(id==='navReserve') togglePanels('reserve'); if(id==='navPayments') togglePanels('payment'); dropdown.classList.remove('open'); });
+      });
+
+      // Swatches (theme change)
+      swatches.forEach(s => s.addEventListener('click', ()=> applyTheme(s.dataset.theme)));
+      function applyTheme(name){
+        if(name==='purple'){
+          document.documentElement.style.setProperty('--accent-1','#7c3aed');
+          document.documentElement.style.setProperty('--accent-2','#06b6d4');
+          document.documentElement.style.setProperty('--accent-3','#06b58e');
+        }else if(name==='teal'){
+          document.documentElement.style.setProperty('--accent-1','#06b6d4');
+          document.documentElement.style.setProperty('--accent-2','#06b58e');
+          document.documentElement.style.setProperty('--accent-3','#7c3aed');
+        }else if(name==='sun'){
+          document.documentElement.style.setProperty('--accent-1','#f59e0b');
+          document.documentElement.style.setProperty('--accent-2','#ef4444');
+          document.documentElement.style.setProperty('--accent-3','#7c3aed');
+        }
+      }
+
+      // Toast
+      function showToast(msg){
+        const t = document.createElement('div'); t.textContent = msg; t.style.position='fixed'; t.style.right='24px'; t.style.bottom='24px'; t.style.background='linear-gradient(90deg,var(--accent-1),var(--accent-2))'; t.style.color='white'; t.style.padding='10px 14px'; t.style.borderRadius='10px'; t.style.boxShadow='0 8px 30px rgba(2,6,23,0.6)'; document.body.appendChild(t);
+        setTimeout(()=> t.style.transform='translateY(20px)', 10);
+        setTimeout(()=> t.remove(), 2500);
+      }
+
+      // Simple form handlers (demo: do not submit to a server)
+      document.getElementById('formCreateHotel').addEventListener('submit', (e)=>{
+        e.preventDefault(); const f = new FormData(e.target); const obj = Object.fromEntries(f.entries()); obj.hotel_id = Date.now()%100000; demo.hotels.push(obj); demo.rooms[obj.hotel_id]=[]; renderHotels(demo.hotels); populateHotelSelects(demo.hotels); showToast('Hotel created (demo)'); e.target.reset();
+      });
+
+      document.getElementById('formAddRoom').addEventListener('submit', (e)=>{
+        e.preventDefault(); const f = new FormData(e.target); const o = Object.fromEntries(f.entries()); const hid = parseInt(o.hotel_id); if(!demo.rooms[hid]) demo.rooms[hid]=[]; const rid = Date.now()%100000; demo.rooms[hid].push({room_id:rid, room_number:o.room_number, room_type:o.room_type, price:o.price}); if(document.querySelector('.hotel-item.active')) document.querySelector('.hotel-item.active').click(); showToast('Room added (demo)'); e.target.reset();
+      });
+
+      document.getElementById('formReserve').addEventListener('submit', (e)=>{ e.preventDefault(); showToast('Reservation created (demo)'); e.target.reset(); });
+      document.getElementById('formPayment').addEventListener('submit', (e)=>{ e.preventDefault(); showToast('Payment recorded (demo)'); e.target.reset(); });
+
+      // Initial small state
+      renderHotels([]);
+      populateHotelSelects([]);
+
+    })();
+  </script>
+</body>
+</html>
